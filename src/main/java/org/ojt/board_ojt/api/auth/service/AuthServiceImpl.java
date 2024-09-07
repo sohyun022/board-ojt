@@ -1,8 +1,7 @@
 package org.ojt.board_ojt.api.auth.service;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import org.ojt.board_ojt.CustomException;
-import org.ojt.board_ojt.ErrorCode;
 import org.ojt.board_ojt.api.auth.domain.RefreshToken;
 import org.ojt.board_ojt.api.auth.dto.req.LoginReq;
 import org.ojt.board_ojt.api.auth.dto.res.Token;
@@ -42,8 +41,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("사용자를 찾을 수 없습니다.");
         }
 
-        RefreshToken refreshToken =insertRefreshToken(member);
-        String accessToken =jwtUtil.createToken(member,"Access");
+        RefreshToken refreshToken = insertRefreshToken(member);
+        String accessToken =jwtUtil.createToken(member,JwtUtil.ACCESS);
 
 
         return Token.builder()
@@ -85,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
     public String reissuedAccessToken (String refreshToken) {
         String email = jwtUtil.refreshTokenValidation(refreshToken);
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USER));
+                .orElseThrow(() ->  new JwtException("jwt error"));
         // access token 재발급
         return jwtUtil.createToken(member, JwtUtil.ACCESS);
     }
