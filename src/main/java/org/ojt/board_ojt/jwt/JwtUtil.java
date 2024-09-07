@@ -5,39 +5,30 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ojt.board_ojt.CustomException;
-import org.ojt.board_ojt.ErrorCode;
 import org.ojt.board_ojt.api.auth.domain.RefreshToken;
-import org.ojt.board_ojt.api.auth.dto.res.Token;
 import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
-import org.ojt.board_ojt.security.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtUtil {
 
-    private final UserDetailsService userDetailsService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final ApplicationContext applicationContext;
 
-    private static final String HEADER_NAME = "Authorization";
-    private static final String SCHEME = "Bearer";
+    private final RefreshTokenRepository refreshTokenRepository; // 주입 받아 사용
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
@@ -64,17 +55,17 @@ public class JwtUtil {
         long expirationMillis = type.equals(ACCESS) ? ACCESS_TIME : REFRESH_TIME;
         Date expiration = new Date(now.getTime() + expirationMillis);
 
-        try{
+        try {
             return Jwts.builder()
                     .setSubject(member.getEmail())
                     .claim("memberId", member.getMemberId())
                     .claim("name", member.getName())
                     .setExpiration(expiration)
-                    .setIssuedAt(new Date())
+                    .setIssuedAt(now)
                     .signWith(key, signatureAlgorithm)
                     .compact();
         } catch (JwtException e) {
-            throw new JwtException("토큰 생성중 오류가 발생했습니다.");
+            throw new JwtException("토큰 error.");
         }
     }
 
@@ -86,12 +77,14 @@ public class JwtUtil {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("유효하지 않은 토큰.");
+            throw new JwtException("토큰 error.");
         }
     }
 
     public Authentication getAuthentication(String token) {
+
         String email = verify(token).getSubject();
+        UserDetailsService userDetailsService = applicationContext.getBean(UserDetailsService.class);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
@@ -99,15 +92,26 @@ public class JwtUtil {
     public String refreshTokenValidation(String token) {
         String email = verify(token).getSubject();
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email); // 외부에서 주입받은 repository 사용
 
         boolean isRefreshTokenValidation = refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
 
         if (!isRefreshTokenValidation) {
-            throw new CustomException(ErrorCode.NOT_MATCHING_REFRESH_TOKEN);
+            throw new JwtException("토큰 error.");
         }
 
         return email;
     }
 
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true; // 토큰이 유효함
+        } catch (JwtException | IllegalArgumentException e) {
+            return false; // 토큰이 유효하지 않음
+        }
+    }
 }
