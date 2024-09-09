@@ -26,11 +26,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
 
         // UserDetails로 변환
-        return new org.springframework.security.core.userdetails.User(member.getName(), member.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+        return new org.springframework.security.core.userdetails.User(
+                member.getEmail(),
+                member.getPassword(),
+                Collections.singleton(new SimpleGrantedAuthority(member.getRole().name())));
 
-        //모든 회원가입자는 user가 되나
-        //만약 여기서 일괄적으로 유저로 등록하고 멤버 엔티티에 롤 컬럼에 어떻게 유저로 저장할까
+        //모든 회원가입자는 user 권한을 부여해야 되나
+        //만약 여기서 일괄적으로 유저로 등록하면 멤버 엔티티에 롤 컬럼에 어떻게 유저로 저장할까
 
     }
 

@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @AllArgsConstructor
@@ -17,18 +18,17 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singleton(new SimpleGrantedAuthority(member.getRole().name()));
     }
-
 
     @Override
     public String getUsername() {
-        return ""; // Spring Security 에서 사용자 이름으로 사용할 필드 member.getEmail()
+        return member.getEmail();
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return member.getPassword();
     }
 
     @Override

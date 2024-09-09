@@ -35,6 +35,7 @@ public class Member {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Job job; // 직무: 백엔드, 프론트, 기획
 
     private String profileImageUrl; // 프로필 이미지 경로
@@ -42,6 +43,7 @@ public class Member {
     private String introduction; // 자기소개
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role; // 권한: ADMIN, USER
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,9 +1,14 @@
 package org.ojt.board_ojt.config;
 
 import lombok.RequiredArgsConstructor;
+import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
 import org.ojt.board_ojt.jwt.JwtAuthenticationFilter;
+import org.ojt.board_ojt.jwt.JwtUtil;
+import org.ojt.board_ojt.security.CustomUserDetailsService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,8 +29,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    @Lazy
+    private final JwtUtil jwtUtil;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, userDetailsService); // 필요한 의존성을 주입합니다.
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -71,7 +83,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable) // H2 콘솔을 위해 frameOptions 비활성화
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); //후자의 필터로 가기전 Jwt필터를 먼저 거치겠다는 것.
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); //후자의 필터로 가기전 Jwt필터를 먼저 거치겠다는 것.
 
         return http.build();
     }
