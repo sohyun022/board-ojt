@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.ojt.board_ojt.api.auth.domain.RefreshToken;
 import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,31 +68,17 @@ public class JwtUtil {
         }
     }
 
-    public Claims verify(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("토큰 error.");
-        }
-    }
-
     public Authentication getAuthentication(String token) {
 
-        String email = verify(token).getSubject();
+        String email = getClaims(token).getSubject();
         UserDetailsService userDetailsService = applicationContext.getBean(UserDetailsService.class);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public String refreshTokenValidation(String token) {
-        String email = verify(token).getSubject();
-
+        String email = getClaims(token).getSubject();
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email); // 외부에서 주입받은 repository 사용
-
         boolean isRefreshTokenValidation = refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
 
         if (!isRefreshTokenValidation) {
@@ -105,13 +90,22 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+            getClaims(token);
             return true; // 토큰이 유효함
         } catch (JwtException | IllegalArgumentException e) {
             return false; // 토큰이 유효하지 않음
+        }
+    }
+
+    public Claims getClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("토큰 error.");
         }
     }
 }

@@ -34,11 +34,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (member == null) {
             // 사용자 없음 예외 처리
-            throw new RuntimeException("사용자를 찾을 수 없습니다."); // 사용자 정의 예외 클래스로 교체 가능
+            throw new RuntimeException("사용자를 찾을 수 없습니다."); // 사용자 정의 예외 클래스로 교체
         }
 
         if(!checkPassword(loginReq.getPassword(),member.getPassword())){
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+            throw new RuntimeException("사용자를 찾을 수 없습니다."); // 사용자 정의 예외 클래스로 교체
         }
 
         RefreshToken refreshToken = insertRefreshToken(member);

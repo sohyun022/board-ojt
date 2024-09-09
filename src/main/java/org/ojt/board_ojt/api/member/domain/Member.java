@@ -30,7 +30,6 @@ public class Member {
 
     @ToString.Exclude
     @JsonIgnore
-    @JsonProperty
     @NotBlank
     private String password;
 
