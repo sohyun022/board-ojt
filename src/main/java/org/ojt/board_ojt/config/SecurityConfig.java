@@ -1,59 +1,39 @@
 package org.ojt.board_ojt.config;
 
-import lombok.RequiredArgsConstructor;
-import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
+import lombok.AllArgsConstructor;
 import org.ojt.board_ojt.jwt.JwtAuthenticationFilter;
 import org.ojt.board_ojt.jwt.JwtUtil;
 import org.ojt.board_ojt.security.CustomUserDetailsService;
-import org.springframework.context.ApplicationContext;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+
 import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    private final RefreshTokenRepository refreshTokenRepository;
-    @Lazy
     private final JwtUtil jwtUtil;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil, userDetailsService); // 필요한 의존성을 주입합니다.
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-
-        manager.createUser(User.withUsername("user1")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build());
-
-        manager.createUser(User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build());
-
-        return manager;
     }
 
     @Bean
