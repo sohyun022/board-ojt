@@ -1,9 +1,11 @@
 package org.ojt.board_ojt.api.board.repository;
 
+import jakarta.transaction.Transactional;
 import org.ojt.board_ojt.api.board.domain.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,11 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE post SET views = views + 1 WHERE id = :postId", nativeQuery = true)
+    int incrementViewCount(@Param("postId") Long postId);
 
     @Query("SELECT p FROM Post p WHERE " +
             "(:author IS NULL OR p.author.memberId = :author) AND " +

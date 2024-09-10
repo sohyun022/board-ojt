@@ -142,8 +142,7 @@ public class BoardServiceImpl implements BoardService{
                 .orElseThrow(() -> new EntityNotFoundException("게시글 정보를 찾을 수 없습니다."));
 
         // 조회수 증가
-        post.setViews(post.getViews() + 1);
-        postRepository.save(post);
+        postRepository.incrementViewCount(postId);
 
         return PostDetailRes.builder()
                 .author(post.getAuthor().getMemberId())
