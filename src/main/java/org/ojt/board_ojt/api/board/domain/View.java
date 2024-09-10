@@ -18,6 +18,12 @@ public class View {
     private Post post;  // 조회된 게시글
 
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = true)  // 조회한 사용자 (비회원일 경우 null)
+    @JoinColumn(name = "member_id")
     private Member member;  // 조회한 사용자
+
+    // 생성자
+    public View(Post post, Member member) {
+        this.post = post;
+        this.member = member;
+    }
 }
