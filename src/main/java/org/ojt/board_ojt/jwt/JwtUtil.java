@@ -2,18 +2,21 @@ package org.ojt.board_ojt.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
 import jakarta.annotation.PostConstruct;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.ojt.board_ojt.api.auth.domain.RefreshToken;
 import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
+
+import org.ojt.board_ojt.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -25,7 +28,7 @@ import java.util.Optional;
 @Slf4j
 public class JwtUtil {
 
-    private final ApplicationContext applicationContext;
+    private final CustomUserDetailsService userDetailsService;
 
     private final RefreshTokenRepository refreshTokenRepository; // 주입 받아 사용
 
@@ -69,10 +72,11 @@ public class JwtUtil {
     }
 
     public Authentication getAuthentication(String token) {
-
         String email = getClaims(token).getSubject();
-        UserDetailsService userDetailsService = applicationContext.getBean(UserDetailsService.class);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+        System.out.println("userDetails = " + userDetails);
+
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 

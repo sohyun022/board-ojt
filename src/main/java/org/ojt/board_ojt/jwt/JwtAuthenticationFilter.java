@@ -8,11 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.ojt.board_ojt.security.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -27,7 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService; //이건 언제쓸까
 
     // SLF4J Logger 생성 -> 왜 씀? -> 이벤트 기록, 경고, 오류, 디버그
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -57,6 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             // 예외 발생 시 에러 로그로 기록
             logger.error("Failed to authenticate user", ex);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return; // 필터 체인 종료
         }
 
         // 3. 필터 체인을 계속 진행

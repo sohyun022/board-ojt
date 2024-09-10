@@ -1,22 +1,18 @@
 package org.ojt.board_ojt.api.board.dto.res;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.ojt.board_ojt.api.board.domain.BoardType;
 import org.ojt.board_ojt.api.comment.domain.Comment;
-import org.ojt.board_ojt.api.board.domain.Like;
-import org.ojt.board_ojt.api.board.domain.View;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@Builder
 public class PostDetailRes {
 
-    private String author;
+    private Long author;
 
     private String title;
 
@@ -24,14 +20,18 @@ public class PostDetailRes {
 
     private String image;
 
-    private List<View> views;
+    private Long views;
+
+    private Long likes;
+
+    private Long comments;
 
     private LocalDateTime createdAt;
 
-    private BoardType board;
+    private LocalDateTime updatedAt;
 
-    private List<Comment> comments;
+    private BoardType boardType;
 
-    private List<Like> likes;
+    private List<Comment> commentsList;
 
 }
