@@ -2,6 +2,7 @@ package org.ojt.board_ojt.config;
 
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.jwt.JwtAuthenticationFilter;
+import org.ojt.board_ojt.security.CustomAuthenticationEntryPoint;
 import org.ojt.board_ojt.security.CustomUserDetailsService;
 
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,13 +43,18 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        (request) -> request.requestMatchers("/api/auth/**", "/api/board/**","/h2-console/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/auth/login", "/api/board/**", "/h2-console/**").permitAll()
+                        .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                )
+
                 .formLogin(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 주입받은 빈 사용
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
