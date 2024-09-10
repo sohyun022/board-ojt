@@ -1,16 +1,21 @@
 package org.ojt.board_ojt.api.board.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.board.domain.Post;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
+import org.ojt.board_ojt.api.board.dto.res.PostDetailRes;
 import org.ojt.board_ojt.api.board.dto.res.PostListRes;
 import org.ojt.board_ojt.api.board.service.BoardService;
+import org.ojt.board_ojt.security.CustomUserDetails;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,10 +34,10 @@ public class BoardController {
         return ResponseEntity.ok(postListRes);
     }
 
-    @PostMapping("/{member_id}")
+    @PostMapping("/")
     @Operation(summary = "게시글 생성", description = "게시글 생성")
-    public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @PathVariable Long member_id) {
-       Post post = boardService.createPost(createPostReq,member_id);
+    public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
+       Post post = boardService.createPost(createPostReq, userDetails);
 
        String message = post.getAuthor().getName() + "님 게시글 작성 완료!\n"
                + "posted data: " + post;
@@ -40,6 +45,22 @@ public class BoardController {
        return ResponseEntity
                .status(HttpStatus.CREATED)
                .body(message);
+    }
+
+    // 게시글 상세 정보를 가져오는 엔드포인트
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailRes> getPostDetail(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            PostDetailRes postDetail = boardService.getPostDetail(postId, userDetails);
+            return ResponseEntity.ok(postDetail);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).body(null); // 접근 권한이 없을 때 403 Forbidden 응답
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(null); // 게시글이 없을 때 404 Not Found 응답
+        }
     }
 
     @PatchMapping("/{postId}")

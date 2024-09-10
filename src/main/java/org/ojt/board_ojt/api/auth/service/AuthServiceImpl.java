@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if(!checkPassword(loginReq.getPassword(),member.getPassword())){
-            throw new RuntimeException("사용자를 찾을 수 없습니다."); // 사용자 정의 예외 클래스로 교체
+            throw new RuntimeException("비밀번호가 일치하지 않습니다."); // 사용자 정의 예외 클래스로 교체
         }
 
         RefreshToken refreshToken = insertRefreshToken(member);
@@ -88,9 +88,4 @@ public class AuthServiceImpl implements AuthService {
         // access token 재발급
         return jwtUtil.createToken(member, JwtUtil.ACCESS);
     }
-
-
-
-
-
 }

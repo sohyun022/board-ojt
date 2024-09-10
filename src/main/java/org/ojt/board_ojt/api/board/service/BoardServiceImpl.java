@@ -12,29 +12,40 @@ import org.ojt.board_ojt.api.board.dto.res.PostListRes;
 import org.ojt.board_ojt.api.board.repository.PostRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
+import org.ojt.board_ojt.security.CustomUserDetails;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class BoardServiceImpl implements BoardService {
+public class BoardServiceImpl implements BoardService{
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
     @Override
     @Transactional
-    public Post createPost(CreatePostReq createPostReq, Long id){
+    public Post createPost(CreatePostReq createPostReq, CustomUserDetails userDetails){
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다: " + id));
+        if(userDetails==null){
+            throw new AccessDeniedException("게시글을 작성하기 위해서는 로그인이 필요합니다.");
+        }
+
+        Member member = memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다: "));
 
         Post post = Post.builder()
                 .title(createPostReq.getTitle())
@@ -48,9 +59,9 @@ public class BoardServiceImpl implements BoardService {
                 .boardType(createPostReq.getBoardType())
                 .build();
 
-
         return postRepository.save(post);
     }
+
     @Override
     @Transactional
     public Post updatePost(UpdatePostReq updatePostReq, Long postId){
@@ -116,9 +127,36 @@ public class BoardServiceImpl implements BoardService {
                         .boardType(post.getBoardType().name())
                         .build())
                 .collect(Collectors.toList());
-
     }
-    public PostDetailRes getPostDetail(Long postId){
-        return null;
+
+    @Override
+    public PostDetailRes getPostDetail(Long postId, CustomUserDetails userDetails){
+
+        // 로그인된 사용자인지 확인
+        if (userDetails==null) {
+            throw new AccessDeniedException("해당 게시글에 접근하기 위해서는 로그인이 필요합니다.");
+        }
+
+        // 기존 게시글을 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글 정보를 찾을 수 없습니다."));
+
+        // 조회수 증가
+        post.setViews(post.getViews() + 1);
+        postRepository.save(post);
+
+        return PostDetailRes.builder()
+                .author(post.getAuthor().getMemberId())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .title(post.getTitle())
+                .views(post.getViews())
+                .likes(post.getLikes())
+                .comments(post.getComments())
+                .boardType(post.getBoardType())
+                .image(post.getPostImage())
+                .commentsList(post.getCommentList())
+                .content(post.getContent())
+                .build();
     }
 }
