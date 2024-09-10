@@ -83,15 +83,6 @@ public class Post {
         this.delYn = "N";
     }
 
-//    @Builder
-    public Post(String title, Member author, BoardType boardType, String content, String postImage) {
-        this.title = title;
-        this.author = author;
-        this.boardType = boardType;
-        this.content = content;
-        this.postImage = postImage;
-    }
-
     // 엔티티가 저장되기 전에 실행
     @PrePersist
     public void onPrePersist() {
