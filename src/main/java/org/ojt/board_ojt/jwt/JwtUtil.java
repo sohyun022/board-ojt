@@ -82,13 +82,23 @@ public class JwtUtil {
 
     public String refreshTokenValidation(String token) {
         String email = getClaims(token).getSubject();
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email); // 외부에서 주입받은 repository 사용
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(email);
         boolean isRefreshTokenValidation = refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
 
         if (!isRefreshTokenValidation) {
-            throw new JwtException("토큰 error.");
+            throw new JwtException("유효하지 않은 리프레시 토큰입니다.");
         }
 
+        // 리프레시 토큰의 만료 시간 확인
+        Claims claims = getClaims(token);
+        Date expirationDate = claims.getExpiration();
+        Date now = new Date();
+
+        if (expirationDate.before(now)) {
+            throw new JwtException("리프레시 토큰이 만료되었습니다.");
+        }
+
+        // 리프레시 토큰이 유효하고 만료되지 않은 경우 이메일 반환
         return email;
     }
 
