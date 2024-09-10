@@ -49,9 +49,11 @@ public class Post {
     private String postImage;
 
     @Column(nullable = false)
+    @Setter
     private Long likes;
 
     @Column(nullable = false)
+    @Setter
     private Long views;
 
     @Column(nullable = false)
@@ -69,7 +71,7 @@ public class Post {
     public void updatePost(String title, String content) {
         this.title = title;
         this.content = content;
-    }
+    } //빌더를 사용하기 떄문에 필요없나?
 
     public void delete(){
 

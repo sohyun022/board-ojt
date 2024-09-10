@@ -13,13 +13,11 @@ import java.time.LocalDateTime;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    public Long findByPostId(Long postId);
     @Query("SELECT p FROM Post p WHERE " +
             "(:author IS NULL OR p.author.memberId = :author) AND " +
             "(:title IS NULL OR p.title LIKE %:title%) AND " +
             "(:startDt IS NULL OR p.createdAt >= :startDt) AND " +
             "(:endDt IS NULL OR p.createdAt <= :endDt)")
-
     Page<Post> findByFilters(
             @Param("author") Long author,
             @Param("title") String title,
