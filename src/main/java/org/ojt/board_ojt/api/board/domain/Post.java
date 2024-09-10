@@ -23,10 +23,12 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화
+@Table(name="post")
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long postId;
 
     @ManyToOne
