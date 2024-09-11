@@ -28,7 +28,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "post_id")
     private Long postId;
 
     @ManyToOne
