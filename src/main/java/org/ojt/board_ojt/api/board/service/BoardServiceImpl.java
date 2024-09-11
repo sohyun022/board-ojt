@@ -15,21 +15,18 @@ import org.ojt.board_ojt.api.board.repository.ViewRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
 import org.ojt.board_ojt.security.CustomUserDetails;
-
-import org.ojt.board_ojt.security.CustomUserDetailsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -151,13 +148,12 @@ public class BoardServiceImpl implements BoardService{
         // 조회 기록이 있는지 확인
         if (!viewRepository.existsByPostAndMember(post, member)) {
             // 조회 기록이 없을 경우 새로운 조회 기록 생성
-            View view = new View(post, member);
+            View view = new View(post,member, LocalDateTime.now());
             viewRepository.save(view);
 
             // 조회수 증가
             postRepository.incrementViewCount(postId);
         }
-
 
         return PostDetailRes.builder()
                 .author(post.getAuthor().getMemberId())
