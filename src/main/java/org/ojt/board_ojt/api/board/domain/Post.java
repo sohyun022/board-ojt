@@ -23,10 +23,12 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화
+@Table(name="post")
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long postId;
 
     @ManyToOne
@@ -49,9 +51,11 @@ public class Post {
     private String postImage;
 
     @Column(nullable = false)
+    @Setter
     private Long likes;
 
     @Column(nullable = false)
+    @Setter
     private Long views;
 
     @Column(nullable = false)
@@ -69,7 +73,7 @@ public class Post {
     public void updatePost(String title, String content) {
         this.title = title;
         this.content = content;
-    }
+    } //빌더를 사용하기 떄문에 필요없나?
 
     public void delete(){
 
@@ -79,15 +83,6 @@ public class Post {
     public void restore() {
 
         this.delYn = "N";
-    }
-
-//    @Builder
-    public Post(String title, Member author, BoardType boardType, String content, String postImage) {
-        this.title = title;
-        this.author = author;
-        this.boardType = boardType;
-        this.content = content;
-        this.postImage = postImage;
     }
 
     // 엔티티가 저장되기 전에 실행
