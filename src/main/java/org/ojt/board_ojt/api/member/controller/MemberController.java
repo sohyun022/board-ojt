@@ -53,7 +53,7 @@ public class MemberController { // 마이페이지, 정보수정, 회원가입
     public ResponseEntity<?> joinMember(@RequestBody JoinReq joinReq) {
 
 
-        Member member=memberService.joinMember(joinReq);
+        Member member = memberService.joinMember(joinReq);
 
         String message = member.getName() + "님 회원 가입 완료!\n"
                 + "received data: " + joinReq;
