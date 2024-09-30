@@ -6,6 +6,7 @@ import org.ojt.board_ojt.api.member.dto.req.PatchInfoReq;
 import org.ojt.board_ojt.api.member.dto.res.InfoRes;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
+import org.ojt.board_ojt.exception.DuplicateEmailException;
 import org.ojt.board_ojt.security.CustomUserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,9 @@ public class MemberServiceImpl implements MemberService{
     @Transactional
     public Member joinMember(JoinReq joinReq){
 
-        checkEmailDuplication(joinReq.getEmail()); // try-catch 를 안 써도 되나
+        if (memberRepository.existsByEmail(joinReq.getEmail())) {
+            throw new DuplicateEmailException("이미 존재하는 이메일입니다.");
+        }
 
         String encodedPassword = passwordEncoder.encode(joinReq.getPassword());
 
