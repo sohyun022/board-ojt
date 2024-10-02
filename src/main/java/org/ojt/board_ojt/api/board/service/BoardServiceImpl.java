@@ -53,7 +53,7 @@ public class BoardServiceImpl implements BoardService{
                 .title(createPostReq.getTitle())
                 .content(createPostReq.getContent())
                 .author(member)
-                .delYn("N")
+                .delYn(false)
                 .likes(0L)
                 .views(0L)
                 .comments(0L)
