@@ -93,13 +93,5 @@ public class MemberServiceImpl implements MemberService{
     // 예외가 던져지면 어떻게 됨 -> error 500
     // 에러 메세지 응답 메세지에 어떻게 담지
 
-    @Override
-    public void checkEmailDuplication(String email){
-        boolean exists = memberRepository.existsByEmail(email);
-        if (exists) {
-            throw new RuntimeException("이미 존재하는 이메일입니다."); // 사용자 정의 예외 클래스로 교체 가능
-        }
-    }
-
 
 }
