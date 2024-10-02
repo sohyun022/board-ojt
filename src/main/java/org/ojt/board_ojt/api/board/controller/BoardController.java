@@ -49,6 +49,7 @@ public class BoardController {
 
     // 게시글 상세 정보를 가져오는 엔드포인트
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
     public ResponseEntity<PostDetailRes> getPostDetail(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
