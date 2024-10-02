@@ -13,8 +13,4 @@ public interface MemberService {
     InfoRes getMemberInfo(Long id); //id 대신 user detail
 
     void patchInfo(PatchInfoReq patchInfoReq, CustomUserDetails userDetails);
-
-    void checkEmailDuplication(String email);
-
-
 }
