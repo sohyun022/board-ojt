@@ -49,6 +49,7 @@ public class BoardController {
 
     // 게시글 상세 정보를 가져오는 엔드포인트
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
     public ResponseEntity<PostDetailRes> getPostDetail(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -74,6 +75,23 @@ public class BoardController {
                 + "posted data: " + post;
 
         return ResponseEntity.ok(message);
+    }
+
+    @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제")
+    public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boolean isDeleted = boardService.deletePost(postId, userDetails);
+            if (isDeleted) {
+                return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("게시글 삭제 권한이 없습니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
 

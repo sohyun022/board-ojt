@@ -18,6 +18,7 @@ public interface BoardService {
     Post updatePost(UpdatePostReq updatePostReq, Long id); //게시글 수정
     List<PostListRes> getPostList(PostListReq postListReq); //게시판 목록 조회
     PostDetailRes getPostDetail(Long PostId, CustomUserDetails userDetails); //게시판 상세 조회
+    boolean deletePost(Long PostId, CustomUserDetails userDetails);
 
 
 

@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +53,7 @@ public class BoardServiceImpl implements BoardService{
                 .title(createPostReq.getTitle())
                 .content(createPostReq.getContent())
                 .author(member)
-                .delYn("N")
+                .delYn(false)
                 .likes(0L)
                 .views(0L)
                 .comments(0L)
@@ -168,5 +169,32 @@ public class BoardServiceImpl implements BoardService{
                 .commentsList(post.getCommentList())
                 .content(post.getContent())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public boolean deletePost(Long postId, CustomUserDetails userDetails){
+        // 해당 게시글을 찾음
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+
+            // 게시글 작성자와 로그인된 유저의 ID를 비교
+            if (post.getAuthor().equals(userDetails.getMember())) {
+                // 게시글이 이미 삭제되지 않았을 때만 삭제 처리
+                if (!post.isDelYn()) {
+                    post.delete();
+                    postRepository.save(post); // 삭제 상태 업데이트
+                    return true;
+                } else {
+                    throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+                }
+            } else {
+                throw new IllegalArgumentException("해당 게시글을 삭제할 권한이 없습니다.");
+            }
+        } else {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+        }
     }
 }
