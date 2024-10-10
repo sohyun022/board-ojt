@@ -66,15 +66,16 @@ public class BoardController {
 
     @PatchMapping("/post/{postId}/update")
     @Operation(summary = "게시글 수정", description = "게시글 수정")
-    public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId) {
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId,  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // 본인인지 확인하는 로직 필요? 아니면 userDetail 에서 자동 확인?
-        Post post = boardService.updatePost(updatePostReq,postId);
+        try{
+            Post post = boardService.updatePost(updatePostReq,postId,userDetails);
 
-        String message = post.getAuthor().getName() + "님 게시글 수정 완료!\n"
-                + "posted data: " + post;
+            return ResponseEntity.status(HttpStatus.OK).body(post);
+        } catch(IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/post/{postId}/delete")

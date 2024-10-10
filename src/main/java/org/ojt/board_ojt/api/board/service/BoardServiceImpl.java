@@ -66,28 +66,37 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     @Transactional
-    public Post updatePost(UpdatePostReq updatePostReq, Long postId){
+    public Post updatePost(UpdatePostReq updatePostReq, Long postId, CustomUserDetails userDetails){
 
         // 기존 게시글을 조회
         Post originPost = postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("게시글 정보를 찾을 수 없습니다."));
 
-        // 수정 사항이 있는 경우에만 업데이트
-        if (updatePostReq.getTitle() != null) {
-            originPost.toBuilder().title(updatePostReq.getTitle()).build();
-        }
-        if (updatePostReq.getContent() != null) {
-            originPost.toBuilder().content(updatePostReq.getContent()).build();
-        }
-        if (updatePostReq.getPostImage() != null) {
-            originPost.toBuilder().postImage(updatePostReq.getPostImage()).build();
-        }
-        if (updatePostReq.getBoardType() != null) {
-            originPost.toBuilder().boardType(updatePostReq.getBoardType()).build();
+
+        if (originPost.getAuthor().equals(userDetails.getMember())){
+
+            // 수정 사항이 있는 경우에만 업데이트
+            if (updatePostReq.getTitle() != null) {
+                originPost.toBuilder().title(updatePostReq.getTitle()).build();
+            }
+            if (updatePostReq.getContent() != null) {
+                originPost.toBuilder().content(updatePostReq.getContent()).build();
+            }
+            if (updatePostReq.getPostImage() != null) {
+                originPost.toBuilder().postImage(updatePostReq.getPostImage()).build();
+            }
+            if (updatePostReq.getBoardType() != null) {
+                originPost.toBuilder().boardType(updatePostReq.getBoardType()).build();
+            }
+
+            // 변경된 게시글 저장
+            return postRepository.save(originPost);
+        } else {
+            throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
         }
 
-        // 변경된 게시글 저장
-        return postRepository.save(originPost);
+
+
     }
 
 
