@@ -30,4 +30,17 @@ public class View {
         this.createdAt = createdAt;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;  // 조회한 사용자
+
+    @CreatedDate
+    private LocalDateTime createdAt; // 조회 일자
+
+    public View(Post post, Member member, LocalDateTime createdAt) {
+        this.post = post;
+        this.member = member;
+        this.createdAt = createdAt;
+    }
+
 }

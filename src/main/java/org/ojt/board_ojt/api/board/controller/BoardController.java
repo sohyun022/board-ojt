@@ -35,6 +35,7 @@ public class BoardController {
     }
 
     @PostMapping("/post")
+
     @Operation(summary = "게시글 생성", description = "게시글 생성")
     public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
        Post post = boardService.createPost(createPostReq, userDetails);
@@ -49,6 +50,7 @@ public class BoardController {
 
     // 게시글 상세 정보를 가져오는 엔드포인트
     @GetMapping("/post/{postId}")
+
     @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
     public ResponseEntity<PostDetailRes> getPostDetail(
             @PathVariable Long postId,
@@ -65,6 +67,7 @@ public class BoardController {
     }
 
     @PatchMapping("/post/{postId}/update")
+
     @Operation(summary = "게시글 수정", description = "게시글 수정")
     public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId,  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -107,6 +110,23 @@ public class BoardController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제")
+    public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boolean isDeleted = boardService.deletePost(postId, userDetails);
+            if (isDeleted) {
+                return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("게시글 삭제 권한이 없습니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
 

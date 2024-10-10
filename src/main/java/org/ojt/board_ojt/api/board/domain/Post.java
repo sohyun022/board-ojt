@@ -78,6 +78,7 @@ public class Post {
     public void restore() {
 
         this.delYn = false;
+
     }
 
     public void like(){

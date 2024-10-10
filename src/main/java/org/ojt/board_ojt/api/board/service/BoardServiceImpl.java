@@ -39,7 +39,9 @@ public class BoardServiceImpl implements BoardService{
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final ViewRepository viewRepository;
+
     private final LikeRepository likeRepository;
+
 
     @Override
     @Transactional
@@ -209,40 +211,41 @@ public class BoardServiceImpl implements BoardService{
         } else {
             throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
         }
-    }
 
-    @Override
-    @Transactional
-    public void likePost(Long postId, CustomUserDetails userDetails){
-        Optional<Post> postOptional = postRepository.findById(postId);
 
-        if (postOptional.isPresent()) {
-            Post post = postOptional.get();
-            Member member = userDetails.getMember();
-            if (!post.isDelYn()) {
+        // 기존 게시글을 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글 정보를 찾을 수 없습니다."));
 
-                boolean isLiked = likeRepository.existsByPostIdAndMemberId(post.getPostId(),member.getMemberId());
+        Member member = userDetails.getMember();
 
-                if(!isLiked){
+        // 조회 기록이 있는지 확인
+        if (!viewRepository.existsByPostAndMember(post, member)) {
+            // 조회 기록이 없을 경우 새로운 조회 기록 생성
+            View view = new View(post,member, LocalDateTime.now());
+            viewRepository.save(view);
 
-                    Like like = new Like(post.getPostId(), member.getMemberId());
-                    likeRepository.save(like);
-
-                    post.like();
-                    postRepository.save(post);
-                } else{
-                    throw new IllegalArgumentException("이미 좋아요 한 게시글입니다.");
-                }
-
-            } else {
-                throw new IllegalArgumentException("이미 삭제 된 게시글입니다.");
-            }
-        } else{
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            // 조회수 증가
+            postRepository.incrementViewCount(postId);
         }
-    }
 
-    @Override
+        return PostDetailRes.builder()
+                .author(post.getAuthor().getMemberId())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .title(post.getTitle())
+                .views(post.getViews())
+                .likes(post.getLikes())
+                .comments(post.getComments())
+                .boardType(post.getBoardType())
+                .image(post.getPostImage())
+                .commentsList(post.getCommentList())
+                .content(post.getContent())
+                .build();
+
+    }
+  
+   @Override
     @Transactional
     public void unlikePost(Long postId, CustomUserDetails userDetails){
         Optional<Post> postOptional = postRepository.findById(postId);
@@ -271,6 +274,31 @@ public class BoardServiceImpl implements BoardService{
             }
         } else{
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+
+    @Override
+    @Transactional
+    public boolean deletePost(Long postId, CustomUserDetails userDetails){
+        // 해당 게시글을 찾음
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+
+            // 게시글 작성자와 로그인된 유저의 ID를 비교
+            if (post.getAuthor().equals(userDetails.getMember())) {
+                // 게시글이 이미 삭제되지 않았을 때만 삭제 처리
+                if (!post.isDelYn()) {
+                    post.delete();
+                    postRepository.save(post); // 삭제 상태 업데이트
+                    return true;
+                } else {
+                    throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+                }
+            } else {
+                throw new IllegalArgumentException("해당 게시글을 삭제할 권한이 없습니다.");
+            }
+        } else {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
         }
     }
 }
