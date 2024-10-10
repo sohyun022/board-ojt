@@ -27,14 +27,14 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/")
+    @GetMapping("/posts")
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회")
     public ResponseEntity<?> getPostList(@RequestBody PostListReq req) {
         List<PostListRes> postListRes=boardService.getPostList(req);
         return ResponseEntity.ok(postListRes);
     }
 
-    @PostMapping("/")
+    @PostMapping("/post")
     @Operation(summary = "게시글 생성", description = "게시글 생성")
     public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
        Post post = boardService.createPost(createPostReq, userDetails);
@@ -48,7 +48,8 @@ public class BoardController {
     }
 
     // 게시글 상세 정보를 가져오는 엔드포인트
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
+    @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
     public ResponseEntity<PostDetailRes> getPostDetail(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -63,17 +64,49 @@ public class BoardController {
         }
     }
 
-    @PatchMapping("/{postId}")
+    @PatchMapping("/post/{postId}/update")
     @Operation(summary = "게시글 수정", description = "게시글 수정")
-    public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId) {
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId,  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // 본인인지 확인하는 로직 필요? 아니면 userDetail 에서 자동 확인?
-        Post post = boardService.updatePost(updatePostReq,postId);
+        try{
+            Post post = boardService.updatePost(updatePostReq,postId,userDetails);
 
-        String message = post.getAuthor().getName() + "님 게시글 수정 완료!\n"
-                + "posted data: " + post;
+            return ResponseEntity.status(HttpStatus.OK).body(post);
+        } catch(IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-        return ResponseEntity.ok(message);
+    }
+
+    @DeleteMapping("/post/{postId}/delete")
+    @Operation(summary = "게시글 삭제", description = "게시글 삭제")
+    public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boolean isDeleted = boardService.deletePost(postId, userDetails);
+            if (isDeleted) {
+                return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("게시글 삭제 권한이 없습니다.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
+
+    @PostMapping("/post/{postId}/like")
+    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요")
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boardService.likePost(postId, userDetails);
+
+            return ResponseEntity.ok("좋아요 성공");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

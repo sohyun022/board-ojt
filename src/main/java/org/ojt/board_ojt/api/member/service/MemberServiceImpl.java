@@ -6,6 +6,7 @@ import org.ojt.board_ojt.api.member.dto.req.PatchInfoReq;
 import org.ojt.board_ojt.api.member.dto.res.InfoRes;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
+import org.ojt.board_ojt.exception.DuplicateEmailException;
 import org.ojt.board_ojt.security.CustomUserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,9 @@ public class MemberServiceImpl implements MemberService{
     @Transactional
     public Member joinMember(JoinReq joinReq){
 
-        checkEmailDuplication(joinReq.getEmail()); // try-catch 를 안 써도 되나
+        if (memberRepository.existsByEmail(joinReq.getEmail())) {
+            throw new DuplicateEmailException("이미 존재하는 이메일입니다.");
+        }
 
         String encodedPassword = passwordEncoder.encode(joinReq.getPassword());
 
@@ -89,14 +92,6 @@ public class MemberServiceImpl implements MemberService{
     // 매개변수를 인스턴스 말고 아이디만 넣어서 해줄 수는 없나??
     // 예외가 던져지면 어떻게 됨 -> error 500
     // 에러 메세지 응답 메세지에 어떻게 담지
-
-    @Override
-    public void checkEmailDuplication(String email){
-        boolean exists = memberRepository.existsByEmail(email);
-        if (exists) {
-            throw new RuntimeException("이미 존재하는 이메일입니다."); // 사용자 정의 예외 클래스로 교체 가능
-        }
-    }
 
 
 }

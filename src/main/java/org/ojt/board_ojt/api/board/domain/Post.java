@@ -61,7 +61,7 @@ public class Post {
     @Column(nullable = false)
     private Long comments;
 
-    private String delYn; // 게시글 삭제 여부
+    private boolean delYn; // 게시글 삭제 여부
 
     //fetchtype.eager 연관 된 엔티티가 즉시 로딩됨
     //cascadetype.reomove 부모 엔티티가 삭제될 때 자식 엔티티도 함께 삭제
@@ -70,19 +70,26 @@ public class Post {
     @OrderBy("createdAt asc")
     private List<Comment> commentList;
 
-    public void updatePost(String title, String content) {
-        this.title = title;
-        this.content = content;
-    } //빌더를 사용하기 떄문에 필요없나?
-
     public void delete(){
 
-        this.delYn = "Y";
+        this.delYn = true;
     }
 
     public void restore() {
 
-        this.delYn = "N";
+        this.delYn = false;
+    }
+
+    public void like(){
+        this.likes++;
+    }
+
+    public void unlike(){
+        this.likes--;
+    }
+
+    public void view(){
+        this.views++;
     }
 
     // 엔티티가 저장되기 전에 실행
