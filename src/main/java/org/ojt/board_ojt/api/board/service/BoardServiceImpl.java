@@ -2,6 +2,7 @@ package org.ojt.board_ojt.api.board.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.ojt.board_ojt.api.board.domain.Like;
 import org.ojt.board_ojt.api.board.domain.Post;
 import org.ojt.board_ojt.api.board.domain.SortType;
 import org.ojt.board_ojt.api.board.domain.View;
@@ -10,6 +11,7 @@ import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
 import org.ojt.board_ojt.api.board.dto.res.PostDetailRes;
 import org.ojt.board_ojt.api.board.dto.res.PostListRes;
+import org.ojt.board_ojt.api.board.repository.LikeRepository;
 import org.ojt.board_ojt.api.board.repository.PostRepository;
 import org.ojt.board_ojt.api.board.repository.ViewRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
@@ -37,6 +39,7 @@ public class BoardServiceImpl implements BoardService{
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final ViewRepository viewRepository;
+    private final LikeRepository likeRepository;
 
     @Override
     @Transactional
@@ -204,6 +207,69 @@ public class BoardServiceImpl implements BoardService{
             }
         } else {
             throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void likePost(Long postId, CustomUserDetails userDetails){
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            Member member = userDetails.getMember();
+            if (!post.isDelYn()) {
+
+                boolean isLiked = likeRepository.existsByPostIdAndMemberId(post.getPostId(),member.getMemberId());
+
+                if(!isLiked){
+
+                    Like like = new Like(post.getPostId(), member.getMemberId());
+                    likeRepository.save(like);
+
+                    post.like();
+                    postRepository.save(post);
+                } else{
+                    throw new IllegalArgumentException("이미 좋아요 한 게시글입니다.");
+                }
+
+            } else {
+                throw new IllegalArgumentException("이미 삭제 된 게시글입니다.");
+            }
+        } else{
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlikePost(Long postId, CustomUserDetails userDetails){
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            Member member = userDetails.getMember();
+
+            if (!post.isDelYn()) {
+
+                boolean isLiked = likeRepository.existsByPostIdAndMemberId(post.getPostId(),member.getMemberId());
+
+                if(isLiked){
+
+                    Like like = likeRepository.findByPostIdAndMemberId(post.getPostId(),member.getMemberId());
+                    likeRepository.delete(like);
+
+                    post.unlike();
+                    postRepository.save(post);
+                } else{
+                    throw new IllegalArgumentException("해당 게시글에 대한 좋아요 기록이 없습니다.");
+                }
+
+            } else {
+                throw new IllegalArgumentException("이미 삭제 된 게시글입니다.");
+            }
+        } else{
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
     }
 }

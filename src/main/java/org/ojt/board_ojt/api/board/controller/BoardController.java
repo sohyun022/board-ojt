@@ -95,5 +95,19 @@ public class BoardController {
 
     }
 
+    @PostMapping("/post/{postId}/like")
+    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요")
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boardService.likePost(postId, userDetails);
+
+            return ResponseEntity.ok("좋아요 성공");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }
