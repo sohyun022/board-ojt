@@ -27,14 +27,14 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/")
+    @GetMapping("/posts")
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회")
     public ResponseEntity<?> getPostList(@RequestBody PostListReq req) {
         List<PostListRes> postListRes=boardService.getPostList(req);
         return ResponseEntity.ok(postListRes);
     }
 
-    @PostMapping("/")
+    @PostMapping("/post")
     @Operation(summary = "게시글 생성", description = "게시글 생성")
     public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
        Post post = boardService.createPost(createPostReq, userDetails);
@@ -48,7 +48,7 @@ public class BoardController {
     }
 
     // 게시글 상세 정보를 가져오는 엔드포인트
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
     @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
     public ResponseEntity<PostDetailRes> getPostDetail(
             @PathVariable Long postId,
@@ -64,7 +64,7 @@ public class BoardController {
         }
     }
 
-    @PatchMapping("/{postId}")
+    @PatchMapping("/post/{postId}/update")
     @Operation(summary = "게시글 수정", description = "게시글 수정")
     public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId) {
 
@@ -77,7 +77,7 @@ public class BoardController {
         return ResponseEntity.ok(message);
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/post/{postId}/delete")
     @Operation(summary = "게시글 삭제", description = "게시글 삭제")
     public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
