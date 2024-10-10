@@ -17,9 +17,18 @@ public class View {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long viewId; // 조회 id
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;  // 조회된 게시글
+    private Long postId;  // 조회된 게시글
+
+    private Long memberId;  // 조회한 사용자
+
+    @CreatedDate
+    private LocalDateTime createdAt; // 조회 일자
+
+    public View(Long postId, Long memberId, LocalDateTime createdAt) {
+        this.postId = postId;
+        this.memberId = memberId;
+        this.createdAt = createdAt;
+    }
 
     @ManyToOne
     @JoinColumn(name = "member_id")
