@@ -80,6 +80,18 @@ public class Post {
         this.delYn = false;
     }
 
+    public void like(){
+        this.likes++;
+    }
+
+    public void unlike(){
+        this.likes--;
+    }
+
+    public void view(){
+        this.views++;
+    }
+
     // 엔티티가 저장되기 전에 실행
     @PrePersist
     public void onPrePersist() {
