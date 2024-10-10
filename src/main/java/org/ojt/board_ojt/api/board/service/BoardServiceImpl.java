@@ -159,13 +159,14 @@ public class BoardServiceImpl implements BoardService{
         Member member = userDetails.getMember();
 
         // 조회 기록이 있는지 확인
-        if (!viewRepository.existsByPostAndMember(post, member)) {
+        if (!viewRepository.existsByPostIdAndMemberId(postId, member.getMemberId())) {
             // 조회 기록이 없을 경우 새로운 조회 기록 생성
-            View view = new View(post,member, LocalDateTime.now());
+            View view = new View(post.getPostId(),member.getMemberId(), LocalDateTime.now());
             viewRepository.save(view);
 
             // 조회수 증가
-            postRepository.incrementViewCount(postId);
+            post.view();
+            postRepository.save(post);
         }
 
         return PostDetailRes.builder()

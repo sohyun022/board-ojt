@@ -15,11 +15,6 @@ import java.time.LocalDateTime;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE post SET views = views + 1 WHERE post_id = :postId", nativeQuery = true) // 바로 쿼리 날리는 건 위험함
-    void incrementViewCount(@Param("postId") Long postId);
-
     @Query("SELECT p FROM Post p WHERE " +
             "(:author IS NULL OR p.author.memberId = :author) AND " +
             "(:title IS NULL OR p.title LIKE %:title%) AND " +

@@ -11,9 +11,6 @@ import java.util.List;
 
 @Repository
 public interface ViewRepository extends JpaRepository<View, Long> {
-    boolean existsByPostAndMember(Post post, Member member);
-
-    @Query("SELECT v from View v join  fetch v.post p where v.member.memberId = : memberId")
-    List<View> findAllByMember(Long memberId);
+    boolean existsByPostIdAndMemberId(Long postId, Long memberId);
 
 }
