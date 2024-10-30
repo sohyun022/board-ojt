@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
-import org.ojt.board_ojt.api.comment.domain.Comment;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
