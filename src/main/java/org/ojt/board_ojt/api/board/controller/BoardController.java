@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.board.domain.Post;
+import org.ojt.board_ojt.api.board.dto.req.CommentReq;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
@@ -98,6 +99,20 @@ public class BoardController {
             return ResponseEntity.ok("좋아요 성공");
 
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/post/{postId}/comment")
+    @Operation(summary = "게시글 댓글 생성", description = "게시글 댓글 생성")
+    public ResponseEntity<?> commentPost(@RequestBody CommentReq commentReq, @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        try {
+            boardService.createComment(commentReq,postId, userDetails);
+
+            return ResponseEntity.ok("댓글 생성 완료");
+
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

@@ -2,15 +2,14 @@ package org.ojt.board_ojt.api.board.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.ojt.board_ojt.api.board.domain.Like;
-import org.ojt.board_ojt.api.board.domain.Post;
-import org.ojt.board_ojt.api.board.domain.SortType;
-import org.ojt.board_ojt.api.board.domain.View;
+import org.ojt.board_ojt.api.board.domain.*;
+import org.ojt.board_ojt.api.board.dto.req.CommentReq;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
 import org.ojt.board_ojt.api.board.dto.res.PostDetailRes;
 import org.ojt.board_ojt.api.board.dto.res.PostListRes;
+import org.ojt.board_ojt.api.board.repository.CommentRepository;
 import org.ojt.board_ojt.api.board.repository.LikeRepository;
 import org.ojt.board_ojt.api.board.repository.PostRepository;
 import org.ojt.board_ojt.api.board.repository.ViewRepository;
@@ -40,6 +39,7 @@ public class BoardServiceImpl implements BoardService{
     private final MemberRepository memberRepository;
     private final ViewRepository viewRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -272,5 +272,53 @@ public class BoardServiceImpl implements BoardService{
         } else{
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
+    }
+
+    @Override
+    @Transactional
+    public void createComment(CommentReq commentReq, Long postId, CustomUserDetails userDetails){
+
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            Member member = userDetails.getMember();
+
+            if (!post.isDelYn()) {
+
+                if(!commentReq.getContent().trim().isEmpty()){
+
+                    Comment comment = Comment.builder()
+                            .writerId(member.getMemberId())
+                            .writerProfileImage(member.getProfileImageUrl())
+                            .writerJob(member.getJob())
+                            .content(commentReq.getContent())
+                            .post(post)
+                            .build();
+
+                    // 부모 댓글 설정
+                    if (commentReq.getParentCommentId() != null) {
+                        Comment parentComment = commentRepository.findById(commentReq.getParentCommentId())
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid parent comment ID"));
+                        parentComment.addChildComment(comment);
+                        parentComment.incrementReplyCountWithoutUpdatingModifiedDate();
+                    }
+
+                    post.comment();
+                    commentRepository.save(comment);
+
+                } else {
+                    throw new RuntimeException("댓글의 내용이 비어있습니다.");
+                }
+
+            } else {
+                throw new RuntimeException("게시글이 삭제되어 댓글을 작성할 수 없습니다."); //따로 나누는 게 좋나?
+            }
+
+        } else {
+            throw new RuntimeException("존재하지 않는 게시글입니다.");
+        }
+
+
     }
 }
