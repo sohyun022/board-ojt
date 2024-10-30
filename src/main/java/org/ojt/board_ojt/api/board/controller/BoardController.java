@@ -39,12 +39,7 @@ public class BoardController {
     public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
        Post post = boardService.createPost(createPostReq, userDetails);
 
-       String message = post.getAuthor().getName() + "님 게시글 작성 완료!\n"
-               + "posted data: " + post;
-
-       return ResponseEntity
-               .status(HttpStatus.CREATED)
-               .body(message);
+       return ResponseEntity.ok().body("게시글 ID: "+post.getPostId());
     }
 
     // 게시글 상세 정보를 가져오는 엔드포인트
