@@ -14,8 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Entity
-@Getter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor//객체를 생성할 때 아무런 초기화 값 없이 기본 생성자를 호출할 수 있어야 하는 경우에 사용됩니다. 예를 들어, JPA 엔티티나 스프링 프레임워크에서 빈(bean)을 생성할 때 사용됩니다.
 //@RequiredArgsConstructor: final 필드와 @NonNull이 붙은 필드를 포함하는 생성자를 자동으로 생성합니다.
