@@ -93,6 +93,8 @@ public class Post {
         this.views++;
     }
 
+    public void comment(){ this.comments++; }
+
     // 엔티티가 저장되기 전에 실행
     @PrePersist
     public void onPrePersist() {
