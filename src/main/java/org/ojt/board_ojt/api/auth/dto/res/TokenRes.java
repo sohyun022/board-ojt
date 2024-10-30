@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter //왜 필요한가
 @Builder
-public class Token {
+public class TokenRes {
 
     //private String grantType;
     //이 필드는 토큰의 인증 타입을 나타냅니다. 일반적으로 JWT를 사용할 때 "Bearer" 타입을 사용하며,

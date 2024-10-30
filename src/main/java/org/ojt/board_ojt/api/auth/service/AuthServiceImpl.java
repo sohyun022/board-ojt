@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ojt.board_ojt.api.auth.domain.RefreshToken;
 import org.ojt.board_ojt.api.auth.dto.req.LoginReq;
-import org.ojt.board_ojt.api.auth.dto.res.Token;
+import org.ojt.board_ojt.api.auth.dto.res.TokenRes;
 import org.ojt.board_ojt.api.auth.repository.RefreshTokenRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
@@ -13,7 +13,6 @@ import org.ojt.board_ojt.jwt.JwtAuthenticationFilter;
 import org.ojt.board_ojt.jwt.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public Token login(LoginReq loginReq){
+    public TokenRes login(LoginReq loginReq){
 
         // 사용자 이름으로 사용자 검색
         Member member = memberRepository.findByEmail(loginReq.getEmail())
@@ -53,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken =jwtUtil.createToken(member,JwtUtil.ACCESS);
 
 
-        return Token.builder()
+        return TokenRes.builder()
                 .memberId(member.getMemberId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
