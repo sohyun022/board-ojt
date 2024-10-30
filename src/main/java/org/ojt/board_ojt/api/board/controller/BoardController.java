@@ -27,7 +27,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/posts")
+    @GetMapping("/")
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회")
     public ResponseEntity<?> getPostList(@RequestBody PostListReq req) {
         List<PostListRes> postListRes=boardService.getPostList(req);
