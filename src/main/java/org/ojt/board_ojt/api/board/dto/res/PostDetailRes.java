@@ -32,6 +32,4 @@ public class PostDetailRes {
 
     private BoardType boardType;
 
-    private List<Comment> commentsList;
-
 }
