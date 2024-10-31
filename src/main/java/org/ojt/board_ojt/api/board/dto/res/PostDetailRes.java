@@ -2,7 +2,7 @@ package org.ojt.board_ojt.api.board.dto.res;
 
 import lombok.*;
 import org.ojt.board_ojt.api.board.domain.BoardType;
-import org.ojt.board_ojt.api.comment.domain.Comment;
+import org.ojt.board_ojt.api.board.domain.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;

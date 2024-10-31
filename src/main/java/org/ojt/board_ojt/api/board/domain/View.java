@@ -2,7 +2,7 @@ package org.ojt.board_ojt.api.board.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.ojt.board_ojt.api.member.domain.Member;
+
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
