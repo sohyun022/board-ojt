@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/login", "/api/board/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/login", "api/member/join", "/api/board/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
