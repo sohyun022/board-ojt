@@ -179,7 +179,6 @@ public class BoardServiceImpl implements BoardService{
                 .comments(post.getComments())
                 .boardType(post.getBoardType())
                 .image(post.getPostImage())
-                .commentsList(post.getCommentList())
                 .content(post.getContent())
                 .build();
     }
