@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ViewRepository extends JpaRepository<View, Long> {
-    boolean existsByPostAndMember(Post post, Member member);
+    boolean existsByPostIdAndMemberId(Long postId, Long memberId);
 
 }

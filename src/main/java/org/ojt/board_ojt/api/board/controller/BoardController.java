@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.board.domain.Post;
+import org.ojt.board_ojt.api.board.dto.req.CommentReq;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
@@ -27,7 +28,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/posts")
+    @GetMapping("/")
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회")
     public ResponseEntity<?> getPostList(@RequestBody PostListReq req) {
         List<PostListRes> postListRes=boardService.getPostList(req);
@@ -35,26 +36,17 @@ public class BoardController {
     }
 
     @PostMapping("/post")
-
     @Operation(summary = "게시글 생성", description = "게시글 생성")
     public ResponseEntity<?> createPost(@RequestBody CreatePostReq createPostReq, @AuthenticationPrincipal CustomUserDetails userDetails) {
        Post post = boardService.createPost(createPostReq, userDetails);
 
-       String message = post.getAuthor().getName() + "님 게시글 작성 완료!\n"
-               + "posted data: " + post;
-
-       return ResponseEntity
-               .status(HttpStatus.CREATED)
-               .body(message);
+       return ResponseEntity.ok().body("게시글 ID: "+post.getPostId());
     }
 
     // 게시글 상세 정보를 가져오는 엔드포인트
     @GetMapping("/post/{postId}")
-
     @Operation(summary = "게시글 상세 정보 조회", description = "게시글 상세 정보 조회")
-    public ResponseEntity<PostDetailRes> getPostDetail(
-            @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> getPostDetail(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         try {
             PostDetailRes postDetail = boardService.getPostDetail(postId, userDetails);
@@ -67,7 +59,6 @@ public class BoardController {
     }
 
     @PatchMapping("/post/{postId}/update")
-
     @Operation(summary = "게시글 수정", description = "게시글 수정")
     public ResponseEntity<?> updatePost(@RequestBody UpdatePostReq updatePostReq, @PathVariable Long postId,  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -112,21 +103,18 @@ public class BoardController {
         }
     }
 
-    @DeleteMapping("/{postId}")
-    @Operation(summary = "게시글 삭제", description = "게시글 삭제")
-    public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PostMapping("/post/{postId}/comment")
+    @Operation(summary = "게시글 댓글 생성", description = "게시글 댓글 생성")
+    public ResponseEntity<?> commentPost(@RequestBody CommentReq commentReq, @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         try {
-            boolean isDeleted = boardService.deletePost(postId, userDetails);
-            if (isDeleted) {
-                return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("게시글 삭제 권한이 없습니다.");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+            boardService.createComment(commentReq,postId, userDetails);
 
+            return ResponseEntity.ok("댓글 생성 완료");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

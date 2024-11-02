@@ -4,7 +4,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.auth.dto.req.LoginReq;
 
-import org.ojt.board_ojt.api.auth.dto.res.Token;
+import org.ojt.board_ojt.api.auth.dto.res.TokenRes;
 import org.ojt.board_ojt.api.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +21,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq loginReq) {
 
-        Token token = authService.login(loginReq);
+        TokenRes tokenRes = authService.login(loginReq);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(tokenRes);
     }
 
     @PostMapping("/refresh-token")

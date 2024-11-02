@@ -1,5 +1,6 @@
 package org.ojt.board_ojt.api.board.service;
 
+import org.ojt.board_ojt.api.board.dto.req.CommentReq;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.domain.Post;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
@@ -13,12 +14,23 @@ import java.util.List;
 
 public interface BoardService {
 
-    //게시글 생성,수정,삭제,복구
+    //게시글 생성,수정,삭제
     Post createPost(CreatePostReq createPostReq, CustomUserDetails userDetails); //게시글 생성
+    Post updatePost(UpdatePostReq updatePostReq, Long postId, CustomUserDetails userDetails); //게시글 수정
+    boolean deletePost(Long PostId, CustomUserDetails userDetails);
 
-    Post updatePost(UpdatePostReq updatePostReq, Long id); //게시글 수정
+    //게시글 조회
     List<PostListRes> getPostList(PostListReq postListReq); //게시판 목록 조회
     PostDetailRes getPostDetail(Long PostId, CustomUserDetails userDetails); //게시판 상세 조회
-    boolean deletePost(Long PostId, CustomUserDetails userDetails);
+
+    //게시글 좋아요
+    void likePost(Long PostId, CustomUserDetails userDetails);
+    void unlikePost(Long PostId, CustomUserDetails userDetails);
+
+    //게시글 댓글 생성,수정,삭제
+    void createComment(CommentReq commentReq, Long postId, CustomUserDetails userDetails);
+
+
+
 
 }
