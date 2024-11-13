@@ -1,12 +1,11 @@
 package org.ojt.board_ojt.api.auth.controller;
 
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.auth.dto.req.LoginReq;
 
 import org.ojt.board_ojt.api.auth.dto.res.TokenRes;
 import org.ojt.board_ojt.api.auth.service.AuthService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,7 +1,6 @@
 package org.ojt.board_ojt.api.board.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.ojt.board_ojt.api.board.domain.Post;
@@ -16,7 +15,6 @@ import org.ojt.board_ojt.security.CustomUserDetails;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
