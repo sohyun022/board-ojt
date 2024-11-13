@@ -26,6 +26,7 @@ public class MemberController { // 마이페이지, 정보수정, 회원가입
 
     @GetMapping("/")
     public ResponseEntity<?> viewMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
         InfoRes infoRes= memberService.getMemberInfo(userDetails.getMember().getMemberId());
 
         String message = "회원 정보 조회 완료!\n"
@@ -36,12 +37,11 @@ public class MemberController { // 마이페이지, 정보수정, 회원가입
 
     @PatchMapping("/")
     public ResponseEntity<?> patchMyInfo(@RequestBody PatchInfoReq patchInfoReq,  @AuthenticationPrincipal CustomUserDetails userDetails) {
-        memberService.patchInfo(patchInfoReq,userDetails);
 
+        memberService.patchInfo(patchInfoReq,userDetails);
         Optional<Member> member = memberRepository.findById(userDetails.getMember().getMemberId());
 
         String message;
-
         message = member.map(value -> value.getName() + "님 회원 정보 수정 완료!\n"
                 + "patched data: " + patchInfoReq).orElse("회원 정보 수정 실패 (존재하지 않는 회원)");
 
@@ -52,7 +52,6 @@ public class MemberController { // 마이페이지, 정보수정, 회원가입
     @PostMapping("/join")
     public ResponseEntity<?> joinMember(@RequestBody JoinReq joinReq) {
 
-
         Member member = memberService.joinMember(joinReq);
 
         String message = member.getName() + "님 회원 가입 완료!\n"
@@ -61,7 +60,5 @@ public class MemberController { // 마이페이지, 정보수정, 회원가입
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(message);
-
     }
-
 }
