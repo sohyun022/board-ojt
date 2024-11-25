@@ -293,7 +293,7 @@ public class BoardServiceImpl implements BoardService{
                     // 부모 댓글 설정
                     if (commentReq.getParentCommentId() != null) {
                         Comment parentComment = commentRepository.findById(commentReq.getParentCommentId())
-                                .orElseThrow(() -> new IllegalArgumentException("Invalid parent comment ID"));
+                                .orElseThrow(() -> new CustomException(CustomErrorInfo.COMMENT_NOT_FOUND));
                         parentComment.addChildComment(comment);
                         parentComment.incrementChildCount();
                     }
