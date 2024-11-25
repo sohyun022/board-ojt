@@ -94,11 +94,7 @@ public class BoardServiceImpl implements BoardService{
         } else {
             throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
         }
-
-
-
     }
-
 
     @Override
     public List<PostListRes> getPostList(PostListReq postListReq){
@@ -162,7 +158,7 @@ public class BoardServiceImpl implements BoardService{
             viewRepository.save(view);
 
             // 조회수 증가
-            post.view();
+            post.viewIncrement();
             postRepository.save(post);
         }
 
@@ -224,7 +220,7 @@ public class BoardServiceImpl implements BoardService{
                     Like like = new Like(post.getPostId(), member.getMemberId());
                     likeRepository.save(like);
 
-                    post.like();
+                    post.likeIncrement();
                     postRepository.save(post);
                 } else{
                     throw new IllegalArgumentException("이미 좋아요 한 게시글입니다.");
@@ -256,7 +252,7 @@ public class BoardServiceImpl implements BoardService{
                     Like like = likeRepository.findByPostIdAndMemberId(post.getPostId(),member.getMemberId());
                     likeRepository.delete(like);
 
-                    post.unlike();
+                    post.likeDecrement();
                     postRepository.save(post);
                 } else{
                     throw new IllegalArgumentException("해당 게시글에 대한 좋아요 기록이 없습니다.");
@@ -300,7 +296,7 @@ public class BoardServiceImpl implements BoardService{
                         parentComment.incrementChildCount();
                     }
 
-                    post.comment();
+                    post.commentIncrement();
                     commentRepository.save(comment);
 
                 } else {
