@@ -12,6 +12,7 @@ public enum CustomErrorInfo {
     REFRESH_TOKEN_ALREADY_EXISTS(400, "refresh token already exists", 400004),
 
     MEMBER_NOT_FOUND(400, "member not found", 400006),
+    COMMENT_NOT_FOUND(400, "comment not found", 400007),
 
     // 401 UNAUTHORIZED
     INVALID_ACCESS_TOKEN(401, "Invalid access token", 401001),
