@@ -67,7 +67,6 @@ public class BoardController {
         }
     }
 
-
     @PostMapping("/post/{postId}/like")
     @Operation(summary = "게시글 좋아요", description = "게시글 좋아요")
     public ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -77,8 +76,8 @@ public class BoardController {
 
     @PostMapping("/post/{postId}/comment")
     @Operation(summary = "게시글 댓글 생성", description = "게시글 댓글 생성")
-    public ResponseEntity<?> commentPost(@RequestBody CommentReq commentReq, @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        boardService.createComment(commentReq,postId, userDetails);
+    public ResponseEntity<?> commentPost(@RequestBody CreateCommentReq createCommentReq, @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        boardService.createComment(createCommentReq,postId, userDetails);
         return ResponseEntity.ok("댓글 생성 완료");
     }
 
