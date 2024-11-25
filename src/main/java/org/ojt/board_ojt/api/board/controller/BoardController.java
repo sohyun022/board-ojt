@@ -81,4 +81,10 @@ public class BoardController {
         return ResponseEntity.ok("댓글 생성 완료");
     }
 
+    @PostMapping("/comment/{commentId}/reply")
+    @Operation(summary = "게시글 댓글 수정", description = "게시글 댓글 수정")
+    public Long updatePost(@RequestBody UpdateCommentReq updateCommentReq, @PathVariable Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return boardService.updateComment(updateCommentReq,commentId,userDetails);
+    }
+
 }
