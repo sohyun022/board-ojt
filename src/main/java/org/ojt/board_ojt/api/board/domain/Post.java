@@ -76,19 +76,14 @@ public class Post {
 
     }
 
-    public void like(){
-        this.likes++;
-    }
+    public void likeIncrement(){ this.likes++; }
+    public void likeDecrement(){ this.likes--; }
 
-    public void unlike(){
-        this.likes--;
-    }
+    public void viewIncrement(){ this.views++; }
 
-    public void view(){
-        this.views++;
-    }
+    public void commentIncrement(){ this.comments++; }
+    public void commentDecrement(){ this.comments--; }
 
-    public void comment(){ this.comments++; }
 
     // 엔티티가 저장되기 전에 실행
     @PrePersist
