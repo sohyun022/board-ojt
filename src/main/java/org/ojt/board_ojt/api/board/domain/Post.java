@@ -88,15 +88,8 @@ public class Post {
     // 엔티티가 저장되기 전에 실행
     @PrePersist
     public void onPrePersist() {
-        this.createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        this.updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
-
-    // 엔티티가 업데이트되기 전에 실행
-    @PreUpdate
-    public void onPreUpdate() {
-        this.updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-    }
-
 
 }
