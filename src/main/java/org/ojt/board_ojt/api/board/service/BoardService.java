@@ -1,10 +1,7 @@
 package org.ojt.board_ojt.api.board.service;
 
-import org.ojt.board_ojt.api.board.dto.req.CreateCommentReq;
-import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
+import org.ojt.board_ojt.api.board.dto.req.*;
 import org.ojt.board_ojt.api.board.domain.Post;
-import org.ojt.board_ojt.api.board.dto.req.PostListReq;
-import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
 import org.ojt.board_ojt.api.board.dto.res.PostDetailRes;
 import org.ojt.board_ojt.api.board.dto.res.PostListRes;
 import org.ojt.board_ojt.security.CustomUserDetails;
@@ -29,6 +26,7 @@ public interface BoardService {
 
     //게시글 댓글 생성,수정,삭제
     void createComment(CreateCommentReq commentReq, Long postId, CustomUserDetails userDetails);
+    Long updateComment(UpdateCommentReq commentReq, Long postId, CustomUserDetails userDetails);
 
 
 

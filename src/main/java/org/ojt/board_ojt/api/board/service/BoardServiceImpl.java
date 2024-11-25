@@ -3,10 +3,7 @@ package org.ojt.board_ojt.api.board.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.board.domain.*;
-import org.ojt.board_ojt.api.board.dto.req.CreateCommentReq;
-import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
-import org.ojt.board_ojt.api.board.dto.req.PostListReq;
-import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
+import org.ojt.board_ojt.api.board.dto.req.*;
 import org.ojt.board_ojt.api.board.dto.res.PostDetailRes;
 import org.ojt.board_ojt.api.board.dto.res.PostListRes;
 import org.ojt.board_ojt.api.board.repository.CommentRepository;
@@ -318,6 +315,17 @@ public class BoardServiceImpl implements BoardService{
             throw new RuntimeException("존재하지 않는 게시글입니다.");
         }
 
+    }
 
+    @Override
+    @Transactional
+    public Long updateComment(UpdateCommentReq commentReq, Long commentId, CustomUserDetails userDetails){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CustomException(CustomErrorInfo.COMMENT_NOT_FOUND));
+
+        commentRepository.updateComment(commentId, commentReq.getContent(), LocalDateTime.now());
+        commentRepository.save(comment);
+
+        return commentId;
     }
 }
