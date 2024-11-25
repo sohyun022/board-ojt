@@ -13,6 +13,7 @@ public enum CustomErrorInfo {
 
     MEMBER_NOT_FOUND(400, "member not found", 400006),
     COMMENT_NOT_FOUND(400, "comment not found", 400007),
+    POST_NOT_FOUND(400, "post not found", 400008),
 
     // 401 UNAUTHORIZED
     INVALID_ACCESS_TOKEN(401, "Invalid access token", 401001),
