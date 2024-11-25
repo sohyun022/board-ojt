@@ -1,10 +1,10 @@
 package org.ojt.board_ojt.api.board.dto.req;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@NoArgsConstructor
 public class UpdateCommentReq {
 
     String content;
