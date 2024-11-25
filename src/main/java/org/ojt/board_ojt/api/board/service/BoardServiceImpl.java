@@ -12,6 +12,8 @@ import org.ojt.board_ojt.api.board.repository.PostRepository;
 import org.ojt.board_ojt.api.board.repository.ViewRepository;
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.ojt.board_ojt.api.member.repository.MemberRepository;
+import org.ojt.board_ojt.exception.CustomErrorInfo;
+import org.ojt.board_ojt.exception.CustomException;
 import org.ojt.board_ojt.security.CustomUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
