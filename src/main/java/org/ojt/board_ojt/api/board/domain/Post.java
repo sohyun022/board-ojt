@@ -6,7 +6,6 @@ import lombok.*;
 
 import org.ojt.board_ojt.api.member.domain.Member;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -38,7 +37,6 @@ public class Post {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     private BoardType boardType;
