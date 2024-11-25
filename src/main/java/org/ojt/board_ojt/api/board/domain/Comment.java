@@ -75,8 +75,8 @@ public class Comment {
 
     // 엔티티가 저장되기 전에 실행
     public void onPrePersist() {
-        this.createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        this.updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     // 덧글 수 증가 메서드
