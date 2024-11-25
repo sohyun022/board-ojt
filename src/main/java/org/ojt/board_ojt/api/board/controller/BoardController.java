@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 import org.ojt.board_ojt.api.board.domain.Post;
-import org.ojt.board_ojt.api.board.dto.req.CommentReq;
+import org.ojt.board_ojt.api.board.dto.req.*;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;

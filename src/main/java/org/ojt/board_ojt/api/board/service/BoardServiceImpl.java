@@ -3,7 +3,7 @@ package org.ojt.board_ojt.api.board.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ojt.board_ojt.api.board.domain.*;
-import org.ojt.board_ojt.api.board.dto.req.CommentReq;
+import org.ojt.board_ojt.api.board.dto.req.CreateCommentReq;
 import org.ojt.board_ojt.api.board.dto.req.CreatePostReq;
 import org.ojt.board_ojt.api.board.dto.req.PostListReq;
 import org.ojt.board_ojt.api.board.dto.req.UpdatePostReq;
@@ -275,7 +275,7 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     @Transactional
-    public void createComment(CommentReq commentReq, Long postId, CustomUserDetails userDetails){
+    public void createComment(CreateCommentReq commentReq, Long postId, CustomUserDetails userDetails){
 
         Optional<Post> postOptional = postRepository.findById(postId);
 
@@ -300,7 +300,7 @@ public class BoardServiceImpl implements BoardService{
                         Comment parentComment = commentRepository.findById(commentReq.getParentCommentId())
                                 .orElseThrow(() -> new IllegalArgumentException("Invalid parent comment ID"));
                         parentComment.addChildComment(comment);
-                        parentComment.incrementReplyCountWithoutUpdatingModifiedDate();
+                        parentComment.incrementChildCount();
                     }
 
                     post.comment();
