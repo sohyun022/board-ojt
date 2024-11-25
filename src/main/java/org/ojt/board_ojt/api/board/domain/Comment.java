@@ -69,15 +69,15 @@ public class Comment {
     }
 
     // 엔티티가 저장되기 전에 실행
+    @PrePersist
     public void onPrePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     // 덧글 수 증가 메서드
-    public void incrementReplyCountWithoutUpdatingModifiedDate() {
+    public void incrementChildCount() {
         this.childCnt += 1;
-        // `updatedAt`이 자동으로 갱신되지 않도록 이 메서드에서는 `@LastModifiedDate` 적용을 피함
     }
 
 
